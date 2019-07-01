@@ -2,12 +2,16 @@ function App() {
 
 }
 
+App.prototype.render = function(){}
+App.prototype.addEventListener = function(){}
+
 var app = new App();
 
 function Row() {
     var createRow = function(index, text, state) {
         var row = document.createElement("li");
         var rowText = document.createTextNode(text);
+        row.appendChild(rowText);
 
         row.setAttribute("id", "row-" + index);
 

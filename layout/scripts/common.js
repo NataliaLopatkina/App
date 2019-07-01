@@ -45,7 +45,7 @@ function App() {
 
             for (var i = 0; i < buttonRemoveItem.length; i++) {
                 buttonRemoveItem[i].addEventListener("click", function () {
-                    var item = this.parentElements;
+                    var item = this.parentElement;
                     item.remove();
                 })
             }
@@ -153,23 +153,34 @@ function App() {
 
 var app = new App();
 
-// Pagination
+var rowsList = document.querySelectorAll("li");
+var countRows = 5;
 
-var drawPagination = function () {
-    var items = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"];
-    var countItems = 5;
-    var countPages = Math.ceil(items.length / countItems);
+function Pagination() {
+    var content = document.querySelector(".todo__content");
+    var containerPagesControl = document.createElement("div");
 
-    function drawItems(index) {
-        index = index - 1;
-        beginArray = index * countItems;
-        endArray = beginArray + countItems;
-        newArray = items.slice(beginArray, endArray);
+    containerPagesControl.classList.add("paging-control");
+    content.appendChild(containerPagesControl);
 
-        console.log(newArray);
+    var getPagesList = function (page) {
+        page = page - 1;
+        var beginArray = page * countRows;
+        var endArray = beginArray + countRows;
+        var newRowsList = rowsList.slice(beginArray, endArray);
+
+        console.log(newRowsList);
     }
 
-    drawItems(1);
+    getPagesList(1);
 }
 
-drawPagination();
+if (rowsList.length > countRows) {
+    var pagination = new Pagination();
+}
+
+// Выводить массив с страницами, если количество элементов на странице превышает заданное количество элементов
+// Вычислить количество страниц: поделить общее количество элементов на количество элементов на странице
+// При добавлении или удалении элементов нужно проверять условие: 
+// - Если общее количество страниц больше, добавлять элемент пагинации;
+// - Если общее количество страниц меньше, удалить элемент пагинации.
