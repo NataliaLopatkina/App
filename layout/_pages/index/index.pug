@@ -3,8 +3,8 @@ html(lang="ru")
         meta(charset="utf-8")
         meta(name="viewport", content="initial-scale=1.0, width=device-width")
         title To do
-        link(href="https://fonts.googleapis.com/css?family=Oswald:400,500,600,700&display=swap" rel="stylesheet")
-        link(rel="stylesheet" href="stylesheets/common.css")
+        link(href="https://fonts.googleapis.com/css?family=Oswald:400&display=swap" rel="stylesheet")
+        link(rel="stylesheet" href="stylesheets/common.min.css")
     
     body(class="page")
         div(class="page__container")
@@ -14,7 +14,7 @@ html(lang="ru")
                         div(class="todo__content")
                             form(class="todo__form")
                                 input(class="todo__input" type="text" placeholder="Enter task")
-                                button(class="todo__button" type="Button") Add
+                                button(class="todo__button" type="button") Add
                             ol(class="todo__list")
  
-        script(src="scripts/common.js")
+        script(src="scripts/app.js")

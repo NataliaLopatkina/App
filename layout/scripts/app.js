@@ -1,56 +1,109 @@
+console.log("I'm ToDo");
+
 function App() {
+    var toDoContent = document.querySelector(".todo__content");
+    var toDoList = toDoContent.querySelector(".todo__list");
+    var toDoItems = [];
+    var toDoButton = toDoContent.querySelector(".todo__button");
 
-}
+    var drawItems = function () {
+        toDoButton.addEventListener("click", function () {
+            addItems();
 
-App.prototype.render = function(){}
-App.prototype.addEventListener = function(){}
+            if (toDoItems.length > 0) {
+                filterItems();
+            }
+        })
+    }
 
-var app = new App();
+    var addItems = function () {
+        var fieldEntry = document.querySelector(".todo__input");
+        var fieldEntryValue = fieldEntry.value;
+        var toDoItemText = document.createTextNode(fieldEntryValue);
+        var toDoItem = document.createElement("li");
+        var buttonRemoveItem = document.createElement("button");
 
-function Row() {
-    var createRow = function(index, text, state) {
-        var row = document.createElement("li");
-        var rowText = document.createTextNode(text);
-        row.appendChild(rowText);
-
-        row.setAttribute("id", "row-" + index);
-
-        if (state === "complited") {
-            row.classList.add("complited");
+        if (fieldEntryValue === "") {
+            alert("Enter task")
         }
 
-        return row();
+        else {
+            toDoItems.push(fieldEntryValue);
+
+            var i = 0;
+            toDoItems.forEach(function () {
+                i++;
+                toDoItem.setAttribute("id", "row-" + i)
+                toDoItem.appendChild(toDoItemText);
+                toDoList.insertBefore(toDoItem, toDoList.children[0]);
+                toDoItem.setAttribute("data-filter", "uncomplited");
+                toDoItem.appendChild(buttonRemoveItem);
+            })
+        }
+
+        fieldEntry.value = "";
+
+        var removeItems = function () {
+            var buttonRemoveItem = toDoList.querySelectorAll("button");
+
+            for (var i = 0; i < buttonRemoveItem.length; i++) {
+                buttonRemoveItem[i].addEventListener("click", function () {
+                    var item = this.parentElement;
+                    item.remove();
+                })
+            }
+        }
+
+        removeItems();
     }
 
-    createRow();
-}
+    var updateHandlers = function () {
+        toDoList.addEventListener("click", function (event) {
+            var target = event.target;
 
-function Pagination() {
-    this.currentPage = currentPage;
-    this.countRow = countRow;
+            if (target.tagName === "LI") {
+                target.classList.toggle("complited");
+            }
 
-    var getRowPage = function(numPage, listRow) {
-        var beginArray = numPage*this.countRow;
-        var endArray = numPage*this.countRow + countRow;
+            var complitedItems = document.querySelectorAll(".complited");
 
-        var newListRow = listRow.slice(beginArray, endArray);
+            complitedItems.forEach(function (element) {
+                element.setAttribute("data-filter", "complited");
+            });
 
-        return newListRow;
+        }, false)
     }
 
-    getRowPage();
-}
+    updateHandlers();
 
-function Filter() {
-    var createButton = function(text, dataButton) {
-        var filterButton = document.createElement("button");
-        filterButton.innerText(text);
-        filterButton.setAttribute("data-button", dataButton)
+    drawItems();
+
+    var filterContainer = document.createElement("div");
+    var buttonComplited = document.createElement("button");
+    var buttonUncomplited = document.createElement("button");
+    var buttonAll = document.createElement("button");
+
+    var addFilterButtons = function () {
+        filterContainer.classList.add("filter");
+        toDoContent.appendChild(filterContainer);
+
+        buttonComplited.innerText = "Complited";
+        buttonComplited.setAttribute("data-button", "complited");
+        filterContainer.appendChild(buttonComplited);
+
+        buttonUncomplited.innerText = "Uncomplited";
+        buttonUncomplited.setAttribute("data-button", "uncomplited");
+        filterContainer.appendChild(buttonUncomplited);
+
+        buttonAll.innerText = "All";
+        buttonAll.setAttribute("data-button", "all");
+        filterContainer.appendChild(buttonAll);
     }
 
-    createButton();
+    addFilterButtons();
 
-    var filterRows = function() {
+    var filterItems = function () {
+
         var filterActive = "";
 
         function filterToDoItems(category) {
@@ -98,5 +151,39 @@ function Filter() {
         })
     }
 
-    filterRows();
+    filterItems();
 }
+
+var app = new App();
+
+var rowsList = document.querySelectorAll("li");
+var countRows = 5;
+
+function Pagination() {
+    var content = document.querySelector(".todo__content");
+    var containerPagesControl = document.createElement("div");
+
+    containerPagesControl.classList.add("paging-control");
+    content.appendChild(containerPagesControl);
+
+    var getPagesList = function (page) {
+        page = page - 1;
+        var beginArray = page * countRows;
+        var endArray = beginArray + countRows;
+        var newRowsList = rowsList.slice(beginArray, endArray);
+
+        console.log(newRowsList);
+    }
+
+    getPagesList(1);
+}
+
+if (rowsList.length > countRows) {
+    var pagination = new Pagination();
+}
+
+// Выводить массив с страницами, если количество элементов на странице превышает заданное количество элементов
+// Вычислить количество страниц: поделить общее количество элементов на количество элементов на странице
+// При добавлении или удалении элементов нужно проверять условие: 
+// - Если общее количество страниц больше, добавлять элемент пагинации;
+// - Если общее количество страниц меньше, удалить элемент пагинации.

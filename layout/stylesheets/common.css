@@ -406,12 +406,7 @@ button[disabled] {
     text-align: center;
 }
 
-.todo__content {
-        overflow: hidden;
-        margin-bottom: 20px;
-    }
-
-.todo__form {
+.todo form {
         display: -webkit-box;
         display: -ms-flexbox;
         display: flex;
@@ -420,7 +415,7 @@ button[disabled] {
                 justify-content: center;
     }
 
-.todo__input {
+.todo input {
         font-size: 18px;
         color: #008080;
         color: var(--main-color);
@@ -435,25 +430,31 @@ button[disabled] {
         outline: none
     }
 
-.todo__input::-webkit-input-placeholder {
+.todo input::-webkit-input-placeholder {
             color: #008080;
             color: var(--main-color);
             opacity: 0.7;
         }
 
-.todo__input::-ms-input-placeholder {
+.todo input::-moz-placeholder {
             color: #008080;
             color: var(--main-color);
             opacity: 0.7;
         }
 
-.todo__input::placeholder {
+.todo input::-ms-input-placeholder {
             color: #008080;
             color: var(--main-color);
             opacity: 0.7;
         }
 
-.todo__button {
+.todo input::placeholder {
+            color: #008080;
+            color: var(--main-color);
+            opacity: 0.7;
+        }
+
+.todo button {
         font-size: 18px;
         color: #ffffff;
         color: var(--white);
@@ -463,8 +464,16 @@ button[disabled] {
         border: 1px solid var(--main-color);
         background-color: #008080;
         background-color: var(--main-color);
-        outline: none;
+        outline: none
     }
+
+.todo button:hover {
+            opacity: 0.7;
+        }
+
+.todo button:active {
+            opacity: 0.5;
+        }
 
 .todo__list {
         max-width: 500px;
@@ -567,7 +576,9 @@ button[disabled] {
         background: #008080;
         background: var(--main-color);
         padding: 5px 10px;
-        margin-right: 15px
+        margin-right: 15px;
+        width: auto;
+        height: auto
     }
 
 .filter button:last-child {
