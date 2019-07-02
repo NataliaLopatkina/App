@@ -21,7 +21,13 @@ function App() {
         var fieldEntryValue = fieldEntry.value;
         var toDoItemText = document.createTextNode(fieldEntryValue);
         var toDoItem = document.createElement("li");
+        var toDoText = document.createElement("p");
         var buttonRemoveItem = document.createElement("button");
+        var checkBox = document.createElement("input");
+
+        toDoItem.appendChild(toDoText);
+
+        checkBox.setAttribute("type", "checkbox");
 
         if (fieldEntryValue === "") {
             alert("Enter task")
@@ -33,8 +39,10 @@ function App() {
             var i = 0;
             toDoItems.forEach(function () {
                 i++;
-                toDoItem.setAttribute("id", "row-" + i)
-                toDoItem.appendChild(toDoItemText);
+                toDoItem.setAttribute("id", "row-" + i);
+                toDoItem.appendChild(checkBox);
+                toDoItem.appendChild(toDoText);
+                toDoText.appendChild(toDoItemText);
                 toDoList.insertBefore(toDoItem, toDoList.children[0]);
                 toDoItem.setAttribute("data-filter", "uncomplited");
                 toDoItem.appendChild(buttonRemoveItem);
@@ -57,24 +65,24 @@ function App() {
         removeItems();
     }
 
-    var updateHandlers = function () {
-        toDoList.addEventListener("click", function (event) {
-            var target = event.target;
+    // var updateHandlers = function () {
+    //     toDoList.addEventListener("click", function (event) {
+    //         var target = event.target;
 
-            if (target.tagName === "LI") {
-                target.classList.toggle("complited");
-            }
+    //         if (target.tagName === "LI") {
+    //             target.classList.toggle("complited");
+    //         }
 
-            var complitedItems = document.querySelectorAll(".complited");
+    //         var complitedItems = document.querySelectorAll(".complited");
 
-            complitedItems.forEach(function (element) {
-                element.setAttribute("data-filter", "complited");
-            });
+    //         complitedItems.forEach(function (element) {
+    //             element.setAttribute("data-filter", "complited");
+    //         });
 
-        }, false)
-    }
+    //     }, false)
+    // }
 
-    updateHandlers();
+    // updateHandlers();
 
     drawItems();
 
