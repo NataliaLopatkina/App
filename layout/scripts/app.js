@@ -122,7 +122,7 @@ function App() {
                     item.classList.add("not-active");
                 });
 
-                var activeToDoItems = toDoList.querySelectorAll(`[data-filter="${category}"]`);
+                var activeToDoItems = toDoList.querySelectorAll("[data-filter="+category+"]");
 
                 activeToDoItems.forEach(function (item) {
                     item.classList.remove("not-active");
@@ -140,8 +140,9 @@ function App() {
 
                 filterButtons.forEach(function (item) {
                     item.classList.remove("is-active");
-                    event.target.classList.add("is-active");
                 })
+                
+                event.target.classList.add("is-active");
 
                 filterToDoItems(currentTarget);
             })
