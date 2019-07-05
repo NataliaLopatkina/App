@@ -1,46 +1,39 @@
 function Pagination() {
-    countRows = 5;
-    rows = [1, 2, 3, 4, 5, 6, 7];
+    this.currentPage = 1;
+    this.pageSize = 5;
+    this.countPages = 0;
+}
 
-    var createPagination = function () {
-        var pagination = document.createElement("div");
-        var paginationList = document.createElement("ul");
-        var paginationItem = document.createElement("li");
-        var paginationLink = document.createElement("a");
+Pagination.prototype.drowControls = function (list, container) {
+    var countPages = Math.ceil(list.length / this.pageSize);
 
-        contentApp.appendChild(pagination);
-
-        pagination.classList.add("pagination");
-        pagination.appendChild(paginationList);
-
-        paginationList.classList.add("pagination__list");
-        paginationList.appendChild(paginationItem);
-
-        paginationItem.appendChild(paginationLink);
-
-        paginationLink.setAttribute("href", "#5");
+    if (countPages === this.countPages) {
+        return;
     }
 
-    createPagination();
+    this.countPages = countPages;
 
-    var getRowsPage = function (page) {
-        var page = page - 1;
-        var beginArrayRows = page * countRows;
-        var endArrayRows = beginArrayRows + countRows;
+    for (var i = 0; i < countPages; i++) {
+        var itemPage = document.createElement("li");
+        var linkPage = document.createElement("a");
+        var linkText = document.createTextNode(i + 1);
 
-        var newArrayRows = rows.slice(beginArrayRows, endArrayRows);
-
-        console.log(newArrayRows);
+        container.appendChild(itemPage);
+        itemPage.appendChild(linkPage);
+        linkPage.appendChild(linkText);
     }
+}
 
-    getRowsPage(2);
+Pagination.prototype.setPage = function (page) {
+    this.currentPage = page;
+}
 
-    var calculateCountPages = function () {
-        var rowsLength = rows.length;
-        var countPages = Math.ceil(rowsLength / countRows);
+Pagination.prototype.getPage = function (list, filter) {
+    var beginArrayRows = (this.currentPage - 1) * this.pageSize;
+    var endArrayRows = beginArrayRows + this.pageSize;
+    var filteredList = list.filter(function (item) {
+        return item.state === filter
+    })
 
-        console.log(countPages);
-    }
-
-    calculateCountPages();
+    return filteredList.slice(beginArrayRows, endArrayRows);
 }

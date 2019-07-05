@@ -9,6 +9,46 @@ function App(content) {
     this.render();
 }
 
+function Pagination() {
+    this.currentPage = 1;
+    this.pageSize = 5;
+    this.countPages = 0;
+}
+
+Pagination.prototype.drowControls = function (list, container) {
+    var countPages = Math.ceil(list.length / this.pageSize);
+
+    if (countPages === this.countPages) {
+        return;
+    }
+
+    this.countPages = countPages;
+
+    for (var i = 0; i < countPages; i++) {
+        var itemPage = document.createElement("li");
+        var linkPage = document.createElement("a");
+        var linkText = document.createTextNode(i + 1);
+
+        container.appendChild(itemPage);
+        itemPage.appendChild(linkPage);
+        linkPage.appendChild(linkText);
+    }
+}
+
+Pagination.prototype.setPage = function (page) {
+    this.currentPage = page;
+}
+
+Pagination.prototype.getPage = function (list, filter) {
+    var beginArrayRows = (this.currentPage - 1) * this.pageSize;
+    var endArrayRows = beginArrayRows + this.pageSize;
+    var filteredList = list.filter(function (item) {
+        return item.state === filter
+    })
+
+    return filteredList.slice(beginArrayRows, endArrayRows);
+}
+
 App.prototype.render = function () {
     var page = this.pagination.getPage(this.list, "uncompleted");
     this.drowRowList(page);
@@ -21,7 +61,7 @@ App.prototype.init = function () {
     this.createForm();
     this.checkStorage();
     this.createButtonFilter();
-    this.filterRows();
+    // /this.filterRows();
 }
 
 App.prototype.addComponents = function () {
@@ -226,3 +266,30 @@ App.prototype.filterRows = function () {
 }
 
 var app = new App("todo");
+
+function Row() {
+
+    this.createRow = function (index, text, state) {
+        var row = document.createElement("li");
+        var rowText = document.createTextNode(text);
+        var buttonRemove = document.createElement("button");
+
+        row.setAttribute("id", "row-" + (index + 1));
+        row.setAttribute("data-filter", state);
+
+        row.appendChild(rowText);
+        row.appendChild(buttonRemove);
+
+        return row;
+    }
+
+    this.toggleState = function (target) {
+        target.classList.toggle("completed");
+
+        var complitedRows = document.querySelectorAll(".completed");
+
+        complitedRows.forEach(function (element) {
+            element.setAttribute("data-filter", "completed");
+        });
+    }
+}
