@@ -1,9 +1,13 @@
-@import "../../_blocks/filter/filter.css";
-@import "../../_blocks/pagination/pagination.css";
+@import "../filter/filter.css";
+@import "../pagination/paginaiton.css";
 
 .todo {
     font-family: "Marck Script", "Arial", sans-serif;
     text-align: center;
+
+    &--filter {
+        margin-bottom: 20px;
+    }
 
     form {
         display: flex;
@@ -14,7 +18,7 @@
         font-size: 50px;
         font-weight: 400;
         color: var(--main-color);
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
 
     input[type="text"] {
@@ -130,5 +134,9 @@
                 }
             }
         }
+    }
+ 
+    .not-active {
+        display: none;
     }
 }

@@ -396,10 +396,6 @@ button[disabled] {
     margin: 0 auto;
 }
 
-.filter {
-    margin-bottom: 20px;
-}
-
 .filter button {
         margin-right: 15px
     }
@@ -412,10 +408,6 @@ button[disabled] {
             opacity: 0.5;
         }
 
-.filter .not-active {
-        display: none;
-    }
-
 .pagination {
     list-style: none;
     display: -webkit-box;
@@ -427,32 +419,48 @@ button[disabled] {
 }
 
 .pagination li {
+        font-size: 18px;
+        color: #ffffff;
+        color: var(--white);
+        width: 24px;
+        height: 24px;
+        border: 2px solid #008080;
+        border: 2px solid var(--main-color);
+        background: #008080;
+        background: var(--main-color);
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+        border-radius: 50%;
         cursor: pointer;
-        margin-right: 20px
+        margin-right: 15px
     }
 
-.pagination li:last-child {
+.pagination li.is-active {
+            color: #008080;
+            color: var(--main-color);
+            background: transparent;
+            border: 2px solid #008080;
+            border: 2px solid var(--main-color);
+        }
+
+.pagination li::last-child {
             margin-right: 0;
         }
 
 .pagination a {
-        font-size: 20px;
-        color: #ffffff;
-        color: var(--white);
-        background: #008080;
-        background: var(--main-color);
+        width: 100%;
+        height: 100%;
         display: block;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #008080;
-        border: 2px solid var(--main-color);
-        border-radius: 50%;
     }
 
 .todo {
     font-family: "Marck Script", "Arial", sans-serif;
     text-align: center;
 }
+
+.todo--filter {
+        margin-bottom: 20px;
+    }
 
 .todo form {
         display: -webkit-box;
@@ -468,7 +476,7 @@ button[disabled] {
         font-weight: 400;
         color: #008080;
         color: var(--main-color);
-        margin-bottom: 10px;
+        margin-bottom: 20px;
     }
 
 .todo input[type="text"] {
@@ -621,6 +629,10 @@ button[disabled] {
                     margin: auto;
                 }
 
+.todo .not-active {
+        display: none;
+    }
+
 @media (min-width: 1500px) {
 
 :root {
@@ -646,12 +658,8 @@ button[disabled] {
 :root {
 }}
 
-@media (max-width: 381px) {
-        .filter button {
-            margin-bottom: 20px
+@media (max-width: 386px) {
+    .filter button {
+            margin-bottom: 15px
+    }
         }
-
-            .filter button::last-child {
-                margin-bottom: 0;
-            }
-}

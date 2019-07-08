@@ -1,228 +1,186 @@
-console.log("I'm ToDo");
-
 function App(content) {
     this.list = [];
     this.content = document.querySelector(content);
     this.row = new Row();
     this.pagination = new Pagination();
+    this.filter = new Filter();
     this.init();
     this.render();
-}
-
-App.prototype.render = function () {
-    var page = this.pagination.getPage(this.list, "uncompleted");
-    this.drowRowList(page);
-    this.pagination.drowControls(this.list, this.paginationContainer);
     this.addEventListeners();
 }
 
+App.prototype.render = function () {
+    var filteredList = this.filter.filterList(this.list);
+    var page = this.pagination.getPage(filteredList);
+    this.drawRowList(page);
+    this.pagination.drowControls(filteredList, this.paginationContainer);
+    this.updateEventListners();
+}
+
 App.prototype.init = function () {
-    this.addComponents();
+    this.addContainers();
     this.createForm();
+    this.filter.create(this.filterContainer);
     this.checkStorage();
-    this.createButtonFilter();
-    this.filterRows();
 }
 
-App.prototype.addComponents = function () {
-    this.content = document.querySelector(".todo");
-    this.form = document.createElement("form");
-    this.listRows = document.createElement("ol");
-    this.filter = document.createElement("div");
-    this.paginationContainer = document.createElement("ul");
-
-    this.filter.classList.add("filter");
-    this.paginationContainer.classList.add("pagination");
-    this.listRows.classList.add("list-rows");
-
-
-    this.content.appendChild(this.filter);
-    this.content.appendChild(this.form);
-    this.content.appendChild(this.listRows);
-    this.content.appendChild(this.paginationContainer);
-
-}
-
-App.prototype.createForm = function () {
-    this.fieldEntry = document.createElement("input");
-    this.buttonAdd = document.createElement("button");
-
-    this.form.appendChild(this.fieldEntry);
-    this.form.appendChild(this.buttonAdd);
-
-    this.form.setAttribute("method", "post");
-    this.form.setAttribute("action", "#5");
-    this.form.setAttribute("onsubmit", "return false");
-
-    this.fieldEntry.setAttribute("type", "text");
-    this.fieldEntry.setAttribute("placeholder", "Enter task");
-
-    this.buttonAdd.innerText = "Add";
-    this.buttonAdd.setAttribute("type", "button");
-}
-
-App.prototype.checkStorage = function () {
-    // IF need to put data in localstorage
-    // var data = [{ text: "task1", state: "completed" }, { text: "task2", state: "completed" }, { text: "task3", state: "completed" }];
-    // localStorage.setItem("todo-list", JSON.stringify(data));
-    var list = localStorage.getItem("todo-list");
-    if (list !== undefined) {
-        this.list = JSON.parse(list);
-    }
-}
-
-App.prototype.drowRowList = function (page) {
-
-    Array.from(this.listRows.children).forEach(function (item) {
-        item.remove();
-    });
-
-    page.forEach(function (item, index) {
-        var newRow = this.row.createRow(index, item.text, item.state);
-        this.listRows.insertBefore(newRow, this.listRows.children[0]);
-    }, this)
-}
-
-App.prototype.addEventListeners = function () {
+App.prototype.updateEventListners = function () {
     var app = this;
 
-    this.buttonAdd.addEventListener("click", function () {
-        app.addElement();
-    })
+    for (var i = 0; i < this.listRows.children.length; i++) {
+        this.listRows.children[i].addEventListener('click', function (event) {
+            if (event.target.tagName === 'LI') {
+                app.list.forEach(function (item) {
+                    if (item.id === event.target.id) {
+                        switch (item.state) {
+                            case 'completed':
+                                item.state = 'uncompleted';
+                                break;
+                            case 'uncompleted':
+                                item.state = 'completed';
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                localStorage.setItem('todo-list', JSON.stringify(app.list));
+                app.render();
+            }
+        })
+    }
 
-    this.fieldEntry.addEventListener("keydown", function (event) { // Добавление row при нажатии на enter
-        if (event.keyCode === 13) {
-            app.addElement();
-        }
-    });
+    var buttonsRemoveList = this.listRows.querySelectorAll('button');
 
-    this.listRows.addEventListener("click", function (event) {
+    for (var i = 0; i < buttonsRemoveList.length; i++) {
 
-        if (event.target.tagName === "LI") {
-            app.row.toggleState(event.target);
-        }
-    })
-
-    var buttonsRemoveList = this.listRows.querySelectorAll("button");
-
-    for (let i = 0; i < buttonsRemoveList.length; i++) {
-
-        buttonsRemoveList[i].addEventListener("click", function () {
+        buttonsRemoveList[i].addEventListener('click', function () {
             var item = this.parentElement;
+            app.list = app.list.filter(function (listItem) {
+                return item.id !== listItem.id
+            })
+            localStorage.setItem('todo-list', JSON.stringify(app.list));
             item.remove();
-            var index = app.list.length - i;
-            app.list = app.list.splice(index, 1);
+            app.render();
         })
     }
 
     var paginationButtons = this.paginationContainer.children;
 
-    for (let i = 0; i < paginationButtons.length; i++) {
+    for (var i = 0; i < paginationButtons.length; i++) {
 
-        paginationButtons[i].addEventListener("click", function () {
+        paginationButtons[i].addEventListener('click', function (event) {
+            var page = event.target.dataset.page;
 
-            if (app.pagination.currentPage !== i + 1) {
-                app.pagination.setPage(i + 1);
+            if (app.pagination.currentPage !== page) {
+                app.pagination.setPage(page);
                 app.render();
             }
         })
     }
 }
 
-App.prototype.addElement = function () {
-    var text = this.fieldEntry.value;
-
-    if (text == "") {
-        alert("Enter something!")
-
-    } else {
-        this.list.push({ index: this.list.length, text: text, state: "uncompleted" });
-        localStorage.setItem("todo-list", JSON.stringify(this.list));
-        var newRow = this.row.createRow(this.list.length - 1, text, "uncompleted");
-        this.listRows.insertBefore(newRow, this.listRows.children[0]);
-    }
-
-    this.fieldEntry.value = "";
-}
-
-App.prototype.createButtonFilter = function (textButton, data) {
-    // var buttonFilter = document.createElement("button");
-    // buttonFilter.innerText(textButton);
-    // buttonFilter.setAttribute("type", "button");
-    // buttonFilter.setAttribute("data-button", data);
-
-    var buttonComplited = document.createElement("button");
-    var buttonUncomplited = document.createElement("button");
-    var buttonAll = document.createElement("button");
-
-    buttonComplited.innerText = "Complited";
-    buttonComplited.setAttribute("data-button", "completed");
-    this.filter.appendChild(buttonComplited);
-
-    buttonUncomplited.innerText = "Uncomplited";
-    buttonUncomplited.setAttribute("data-button", "uncompleted");
-    this.filter.appendChild(buttonUncomplited);
-
-    buttonAll.innerText = "All";
-    buttonAll.setAttribute("data-button", "all");
-    this.filter.appendChild(buttonAll);
-}
-
-App.prototype.filterRows = function () {
-    var filterActive = "";
+App.prototype.addEventListeners = function () {
     var app = this;
 
-    this.itemsList = app.listRows.querySelectorAll("li");
-    this.itemsList.forEach(function (item) {
-        item.classList.remove("not-active");
-    });
-
-    function filterItemsList(category) {
-        if (filterActive != category) {
-
-            this.itemsList = app.listRows.querySelectorAll("li");
-
-            this.itemsList.forEach(function (item) {
-                item.classList.add("not-active");
-            });
-
-            var activeItemsList = app.listRows.querySelectorAll("[data-filter =" + category + "]");
-
-            activeItemsList.forEach(function (item) {
-                item.classList.remove("not-active");
-            });
-
-            filterActive = category;
-        }
-    }
-
-    var filterButtons = this.filterContainer.querySelectorAll("button");
+    var filterButtons = this.filterContainer.querySelectorAll('button');
 
     filterButtons.forEach(function (element) {
-        element.addEventListener("click", function () {
+        element.addEventListener('click', function () {
             var currentTarget = event.target.dataset.button;
+            app.filter.setState(currentTarget);
 
             filterButtons.forEach(function (item) {
-                item.classList.remove("is-active");
-            })
+                item.classList.remove('is-active');
+            });
 
-            event.target.classList.add("is-active");
+            event.target.classList.add('is-active');
+            app.render();
+        });
+    });
 
-            filterItemsList(currentTarget);
-        })
+    this.buttonAdd.addEventListener('click', function () {
+        app.addNewRow();
+        app.render();
     })
 
-    var filterButtonAll = document.querySelector('[data-button="all"]');
-
-    filterButtonAll.addEventListener("click", function (list) {
-        this.itemsList.forEach(function (element) {
-            element.classList.remove("not-active");
-        })
-
-        filterActive = "all";
-    })
-
-    filterItemsList();
+    this.fieldEntry.addEventListener('keydown', function (event) {
+        if (event.keyCode === 13) {
+            app.addNewRow();
+            app.render();
+        }
+    });
 }
 
-var app = new App("todo");
+App.prototype.addContainers = function () {
+    this.content = document.querySelector('.todo');
+    this.form = document.createElement('form');
+    this.listRows = document.createElement('ol');
+    this.filterContainer = document.createElement('div');
+    this.paginationContainer = document.createElement('ul');
+
+    this.filterContainer.classList.add('filter');
+    this.filterContainer.classList.add('todo--filter');
+    this.listRows.classList.add('list-rows');
+    this.paginationContainer.classList.add('pagination');
+
+    this.content.appendChild(this.filterContainer);
+    this.content.appendChild(this.form);
+    this.content.appendChild(this.listRows);
+    this.content.appendChild(this.paginationContainer);
+}
+
+App.prototype.createForm = function () {
+    this.fieldEntry = document.createElement('input');
+    this.buttonAdd = document.createElement('button');
+
+    this.form.appendChild(this.fieldEntry);
+    this.form.appendChild(this.buttonAdd);
+
+    this.form.setAttribute('method', 'post');
+    this.form.setAttribute('action', '#5');
+    this.form.setAttribute('onsubmit', 'return false');
+
+    this.fieldEntry.setAttribute('type', 'text');
+    this.fieldEntry.setAttribute('placeholder', 'Enter something');
+
+    this.buttonAdd.innerText = 'Add';
+    this.buttonAdd.setAttribute('type', 'button');
+}
+
+App.prototype.checkStorage = function () {
+    var list = localStorage.getItem('todo-list');
+    if (list !== undefined) {
+        this.list = JSON.parse(list);
+    }
+}
+
+App.prototype.drawRowList = function (page) {
+
+    var listForRemove = this.listRows.querySelectorAll('li');
+
+    listForRemove.forEach(function (item) {
+        item.remove();
+    })
+
+    page.reverse().forEach(function (item) {
+        var newRow = this.row.createRow(item.id, item.text, item.state);
+        this.listRows.insertBefore(newRow, this.listRows.children[0]);
+    }, this)
+}
+
+App.prototype.addNewRow = function () {
+    var text = this.fieldEntry.value;
+
+    if (text == '') {
+        alert('Enter something!')
+
+    } else {
+        this.list.unshift({ id: 'row-' + this.list.length, text: text, state: 'uncompleted'});
+        localStorage.setItem('todo-list', JSON.stringify(this.list));
+    }
+
+    this.fieldEntry.value = '';
+}
+
+var app = new App('todo');
