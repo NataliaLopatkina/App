@@ -9,6 +9,13 @@ function App(content) {
     this.addEventListeners();
 }
 
+App.prototype.init = function () {
+    this.addContainers();
+    this.createForm();
+    this.filter.create(this.filterContainer);
+    this.checkStorage();
+}
+
 App.prototype.render = function () {
     var filteredList = this.filter.filterList(this.list);
     var page = this.pagination.getPage(filteredList);
@@ -17,11 +24,36 @@ App.prototype.render = function () {
     this.updateEventListners();
 }
 
-App.prototype.init = function () {
-    this.addContainers();
-    this.createForm();
-    this.filter.create(this.filterContainer);
-    this.checkStorage();
+App.prototype.addEventListeners = function () {
+    var app = this;
+
+    var filterButtons = this.filterContainer.querySelectorAll('button');
+
+    filterButtons.forEach(function (element) {
+        element.addEventListener('click', function () {
+            var currentTarget = event.target.dataset.button;
+            app.filter.setState(currentTarget);
+
+            filterButtons.forEach(function (item) {
+                item.classList.remove('is-active');
+            });
+
+            event.target.classList.add('is-active');
+            app.render();
+        });
+    });
+
+    this.buttonAdd.addEventListener('click', function () {
+        app.addNewRow();
+        app.render();
+    })
+
+    this.fieldEntry.addEventListener('keydown', function (event) {
+        if (event.keyCode === 13) {
+            app.addNewRow();
+            app.render();
+        }
+    });
 }
 
 App.prototype.updateEventListners = function () {
@@ -80,38 +112,6 @@ App.prototype.updateEventListners = function () {
     }
 }
 
-App.prototype.addEventListeners = function () {
-    var app = this;
-
-    var filterButtons = this.filterContainer.querySelectorAll('button');
-
-    filterButtons.forEach(function (element) {
-        element.addEventListener('click', function () {
-            var currentTarget = event.target.dataset.button;
-            app.filter.setState(currentTarget);
-
-            filterButtons.forEach(function (item) {
-                item.classList.remove('is-active');
-            });
-
-            event.target.classList.add('is-active');
-            app.render();
-        });
-    });
-
-    this.buttonAdd.addEventListener('click', function () {
-        app.addNewRow();
-        app.render();
-    })
-
-    this.fieldEntry.addEventListener('keydown', function (event) {
-        if (event.keyCode === 13) {
-            app.addNewRow();
-            app.render();
-        }
-    });
-}
-
 App.prototype.addContainers = function () {
     this.content = document.querySelector('.todo');
     this.form = document.createElement('form');
@@ -149,6 +149,9 @@ App.prototype.createForm = function () {
 }
 
 App.prototype.checkStorage = function () {
+    var data = [];
+    localStorage.setItem("todo-list", JSON.stringify(data));
+    
     var list = localStorage.getItem('todo-list');
     if (list !== undefined) {
         this.list = JSON.parse(list);
